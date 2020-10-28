@@ -11,9 +11,12 @@ CHILD_INDEX = 9
 SYNDORME_INDEX = 41
 SERIOUS_SYNDORME_INDEX = 42
 
+IMPORTANT_INDEX = [13, 16, 20, 21]
+
 def pre_process(file_name):
     df = read_raw_data(file_name)
     data_cleaning(df)
+    data_padding(df, normal_method="median")
     return df
 
 def data_cleaning(df):
@@ -57,6 +60,19 @@ def data_cleaning(df):
                 df.iloc[i, SYNDORME_INDEX] = 2.0
     s = df[c_names[SYNDORME_INDEX]]
     df.drop([c_names[SERIOUS_SYNDORME_INDEX]], axis=1, inplace=True)
+
+
+def data_padding(df, normal_method="mean"):
+    method_dic = {
+        "mean": df.mean,
+        "median": df.median
+    }
+
+    # 重要的某些列不填充
+    normal_padding = method_dic.get(normal_method, df.mean)()
+    for i in IMPORTANT_INDEX:
+        normal_padding[i] = np.nan
+    df.fillna(normal_padding, inplace=True)
 
 if __name__ == "__main__":
     data = pre_process(sys.argv[1])
