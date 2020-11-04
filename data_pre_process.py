@@ -13,9 +13,9 @@ CHILD_INDEX = 9
 SYNDORME_INDEX = 41
 SERIOUS_SYNDORME_INDEX = 42
 
+ABC_INDEX = [3, 4, 5]
 
-
-IMPORTANT_INDEX = [13, 16, 20, 21]
+USELESS_INDEX = []
 
 def pre_process(file_name):
     global C_NAMES
@@ -72,12 +72,17 @@ def data_padding(df, normal_method="mean"):
         "mean": df.mean,
         "median": df.median
     }
-
-    # 某些列暂时不填充
     normal_padding = method_dic.get(normal_method, df.mean)()
-    for i in IMPORTANT_INDEX:
-        normal_padding[i] = np.nan
-    df.fillna(normal_padding, inplace=True)
+
+    # 填充abc列
+    df[C_NAMES[ABC_INDEX[0]]].fillna(normal_padding[C_NAMES[ABC_INDEX[0]]], inplace=True)
+    for i, v in enumerate(df[C_NAMES[ABC_INDEX[0]]]):
+        if pd.isna(df.iloc[i, ABC_INDEX[1]]):
+            df.iloc[i, ABC_INDEX[1]] = v
+            df.iloc[i, ABC_INDEX[2]] = v
+    for i, v in enumerate(df[C_NAMES[ABC_INDEX[1]]]):
+        if pd.isna(df.iloc[i, ABC_INDEX[2]]):
+            df.iloc[i, ABC_INDEX[2]] = v
 
 if __name__ == "__main__":
     data = pre_process(sys.argv[1])
