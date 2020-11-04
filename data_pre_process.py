@@ -17,7 +17,7 @@ SERIOUS_SYNDORME_INDEX = 42
 
 ABC_INDEX = [3, 4, 5]
 
-USELESS_INDEX = []
+USELESS_INDEX = [34, 35, 36, 37]
 
 def pre_process(file_name):
     global C_NAMES
@@ -66,6 +66,10 @@ def data_cleaning(df):
                 df.iloc[i, SYNDORME_INDEX] = 2.0
     s = df[C_NAMES[SYNDORME_INDEX]]
     df.drop([C_NAMES[SERIOUS_SYNDORME_INDEX]], axis=1, inplace=True)
+
+    # 删除数据大量缺失的几列
+    for index in USELESS_INDEX:
+        df.drop([C_NAMES[index]], axis=1, inplace=True)
 
 # 填充缺失数据
 def data_padding(df, normal_method="mean"):
