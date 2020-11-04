@@ -9,6 +9,8 @@ NEW_FILE = "new_data.xls"
 
 SEX_INDEX = 1
 AGE_INDEX = 2
+NUM_INDEX = 6
+CIRRHOSIS_TYPE_INDEX = 7
 CHILD_INDEX = 9
 SYNDORME_INDEX = 41
 SERIOUS_SYNDORME_INDEX = 42
@@ -46,7 +48,7 @@ def data_cleaning(df):
         except ValueError:
             t[i] = np.nan
     df[C_NAMES[c_name_index]] = pd.Series(t)
-    
+
     # 处理Child分级 A为0 B为1
     c_name_index = CHILD_INDEX
     s = df[C_NAMES[c_name_index]]
@@ -58,7 +60,6 @@ def data_cleaning(df):
 
     # 处理严重并发症 和 并发症合为一列
     # 无并发症 0 有并发症 1 并发症严重 2
-    
     for i, if_have in enumerate(df[C_NAMES[SYNDORME_INDEX]]):
         if if_have == 1.0:
             if df[C_NAMES[SERIOUS_SYNDORME_INDEX]][i] != "0":
@@ -83,6 +84,10 @@ def data_padding(df, normal_method="mean"):
     for i, v in enumerate(df[C_NAMES[ABC_INDEX[1]]]):
         if pd.isna(df.iloc[i, ABC_INDEX[2]]):
             df.iloc[i, ABC_INDEX[2]] = v
+        
+    # 填充肿瘤数量肝硬化类型
+    df[C_NAMES[NUM_INDEX]].fillna(1, inplace=True)
+    df[C_NAMES[CIRRHOSIS_TYPE_INDEX]].fillna(1, inplace=True)
 
 if __name__ == "__main__":
     data = pre_process(sys.argv[1])
