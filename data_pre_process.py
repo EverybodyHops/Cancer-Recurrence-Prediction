@@ -14,8 +14,11 @@ CIRRHOSIS_TYPE_INDEX = 7
 CHILD_INDEX = 9
 SYNDORME_INDEX = 41
 SERIOUS_SYNDORME_INDEX = 42
+RECUR_INDEX = 44
 
 ABC_INDEX = [3, 4, 5]
+NEED_PADDING = [i for i in range(13, 34)]
+NEED_PADDING.extend([AGE_INDEX, ABC_INDEX[0]])
 
 USELESS_INDEX = [34, 35, 36, 37]
 
@@ -74,10 +77,15 @@ def data_cleaning(df):
 # 填充缺失数据
 def data_padding(df, normal_method="mean"):
     method_dic = {
-        "mean": df.mean,
-        "median": df.median
+        "mean": df.groupby(C_NAMES[SEX_INDEX]).mean,
+        "median": df.groupby(C_NAMES[SEX_INDEX]).median,
     }
+    # 进行一般的填充
     normal_padding = method_dic.get(normal_method, df.mean)()
+    df.set_index([C_NAMES[SEX_INDEX]], inplace=True)
+    for index in NEED_PADDING:
+        df[C_NAMES[index]] = df[C_NAMES[index]].fillna(normal_padding[C_NAMES[index]])
+    df.reset_index(inplace=True)
 
     # 填充abc列
     df[C_NAMES[ABC_INDEX[0]]].fillna(normal_padding[C_NAMES[ABC_INDEX[0]]], inplace=True)
@@ -89,12 +97,14 @@ def data_padding(df, normal_method="mean"):
         if pd.isna(df.iloc[i, ABC_INDEX[2]]):
             df.iloc[i, ABC_INDEX[2]] = v
         
-    # 填充肿瘤数量肝硬化类型
+    # 填充肿瘤数量肝硬化类型是否复发
     df[C_NAMES[NUM_INDEX]].fillna(1, inplace=True)
     df[C_NAMES[CIRRHOSIS_TYPE_INDEX]].fillna(1, inplace=True)
+    df[C_NAMES[RECUR_INDEX]].fillna(0, inplace=True)
 
 if __name__ == "__main__":
     data = pre_process(sys.argv[1])
+    print(data.isnull().any())
     data.to_excel(NEW_FILE)
     # n_df = pd.read_excel(NEW_FILE, dtype="float64")
     # print(n_df)
