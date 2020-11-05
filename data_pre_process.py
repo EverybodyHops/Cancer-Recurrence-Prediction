@@ -20,7 +20,7 @@ ABC_INDEX = [3, 4, 5]
 NEED_PADDING = [i for i in range(13, 34)]
 NEED_PADDING.extend([AGE_INDEX, ABC_INDEX[0]])
 
-USELESS_INDEX = [34, 35, 36, 37]
+USELESS_INDEX = [0, 34, 35, 36, 37]
 
 def pre_process(file_name):
     global C_NAMES
