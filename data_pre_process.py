@@ -81,7 +81,7 @@ def data_padding(df, normal_method="mean"):
         "median": df.groupby(C_NAMES[SEX_INDEX]).median,
     }
     # 进行一般的填充
-    normal_padding = method_dic.get(normal_method, df.mean)()
+    normal_padding = method_dic.get(normal_method, method_dic["mean"])()
     df.set_index([C_NAMES[SEX_INDEX]], inplace=True)
     for index in NEED_PADDING:
         df[C_NAMES[index]] = df[C_NAMES[index]].fillna(normal_padding[C_NAMES[index]])
@@ -90,12 +90,12 @@ def data_padding(df, normal_method="mean"):
     # 填充abc列
     df[C_NAMES[ABC_INDEX[0]]].fillna(normal_padding[C_NAMES[ABC_INDEX[0]]], inplace=True)
     for i, v in enumerate(df[C_NAMES[ABC_INDEX[0]]]):
-        if pd.isna(df.iloc[i, ABC_INDEX[1]]):
-            df.iloc[i, ABC_INDEX[1]] = v
-            df.iloc[i, ABC_INDEX[2]] = v
+        if pd.isna(df.iloc[i, ABC_INDEX[1] - 1]):
+            df.iloc[i, ABC_INDEX[1] - 1] = v
+            df.iloc[i, ABC_INDEX[2] - 1] = v
     for i, v in enumerate(df[C_NAMES[ABC_INDEX[1]]]):
-        if pd.isna(df.iloc[i, ABC_INDEX[2]]):
-            df.iloc[i, ABC_INDEX[2]] = v
+        if pd.isna(df.iloc[i, ABC_INDEX[2] - 1]):
+            df.iloc[i, ABC_INDEX[2] - 1] = v
         
     # 填充肿瘤数量肝硬化类型是否复发
     df[C_NAMES[NUM_INDEX]].fillna(1, inplace=True)
