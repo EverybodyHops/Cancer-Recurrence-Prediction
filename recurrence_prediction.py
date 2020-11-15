@@ -3,8 +3,7 @@ from data_pre_process import pre_process
 import sys
 from model import train_model
 
-if sys.argv:
-    sys.argv.append(".\data.xls")
+sys.argv.append(".\data.xls")
 
 Label_Index = -1
 Drop_Index = [39,40]
