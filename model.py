@@ -26,7 +26,7 @@ def train_model(data_train, label_train, data_valid, label_valid):
     evals_result = {}  # 记录训练结果所用
     gbm_model = lgb.train(parameters,
                     lgb_train,
-                    valid_sets=[lgb_valid, lgb_valid],
+                    valid_sets=[lgb_train, lgb_valid],
                     num_boost_round=100,  # 提升迭代的次数
                     early_stopping_rounds=50,
                     evals_result=evals_result,
