@@ -1,35 +1,45 @@
 from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
 from data_pre_process import pre_process
-import sys
 from model import train_model, eval_model
+import sys
 
 sys.argv.append(".\data.xls")
 
 Label_Index = -1
 Drop_Index = [39,40]
+Cat_Index = [0, 6, 7, 10, 11, 35, 37, 38]
 
 if __name__ == '__main__':
+    
     data = pre_process(sys.argv[1])
-    #   数据分成五份
+    C_NAMES = data.columns
+    
+    label = data[C_NAMES[Label_Index]]
+    
+    for index in Drop_Index:
+        data.drop([C_NAMES[index]], axis=1, inplace=True)
+    for index in Cat_Index:
+        data[C_NAMES[index]] = data[C_NAMES[index]].astype('category')
+    
+    data_model, data_test, label_model, label_test = train_test_split(data, label, test_size=0.2, random_state=2020)
+
+    #   五折交叉验证
     kf = KFold(n_splits=5, shuffle=True, random_state=2020)
-    for test_index, train_index in kf.split(data):
-        #   生成训练集和测试集
-        data_train = data.copy()
-        data_test = data.copy()
-        data_train.drop(data_train.index[train_index], inplace=True)
-        data_test.drop(data_test.index[test_index], inplace=True)
+    for train_index, valid_index in kf.split(data_model):
+        #   生成训练集和验证集
+        data_train = data_model.copy()
+        data_valid = data_model.copy()
+        data_train.drop(data_train.index[valid_index], inplace=True)
+        data_valid.drop(data_valid.index[train_index], inplace=True)
 
-        C_NAMES_train = data_train.columns
-        C_NAMES_test = data_test.columns
         #   得到label
-        data_train_label = data_train[C_NAMES_train[Label_Index]]
-        data_test_label = data_test[C_NAMES_test[Label_Index]]
-        #   删除label列和随机访问时间列
-        for index in Drop_Index:
-            data_train.drop([C_NAMES_train[index]], axis=1, inplace=True)
-            data_test.drop([C_NAMES_test[index]], axis=1, inplace=True)
+        label_train = label_model.drop(label_model.index[valid_index])
+        label_valid = label_model.drop(label_model.index[train_index])
 
-        gbm_model, evals_result = train_model(data_train, data_train_label, data_test, data_test_label)
-        score = eval_model(data_test, data_test_label)
+        gbm_model, evals_result = train_model(data_train, label_train, data_valid, label_valid)
+        # score = eval_model(data_valid, label_valid)
 
 
+    #  测试集评测
+    score = eval_model(data_test, label_test)
