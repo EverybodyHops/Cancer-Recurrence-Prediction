@@ -22,12 +22,12 @@ NEED_PADDING.extend([AGE_INDEX, ABC_INDEX[0]])
 
 USELESS_INDEX = [0, 34, 35, 36, 37]
 
-def pre_process(file_name):
+def pre_process(file_name, normal_method="median"):
     global C_NAMES
     df = read_raw_data(file_name)
     C_NAMES = df.columns
     data_cleaning(df)
-    data_padding(df, normal_method="median")
+    data_padding(df, normal_method)
     return df
 
 # 进行数据的格式转换和某些列的删除

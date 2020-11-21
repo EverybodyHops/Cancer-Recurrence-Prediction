@@ -12,7 +12,7 @@ Cat_Index = [0, 6, 7, 10, 11, 35, 37]
 
 if __name__ == '__main__':
     
-    data = pre_process(sys.argv[1])
+    data = pre_process(sys.argv[1], "median")
     C_NAMES = data.columns
     
     label = data[C_NAMES[Label_Index]]
