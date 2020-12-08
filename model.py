@@ -1,5 +1,6 @@
 import lightgbm as lgb
 from sklearn.metrics import roc_auc_score
+from matplotlib import pyplot as plt
 
 # 参数设置
 parameters = {
@@ -34,6 +35,12 @@ def train_model(data_train, label_train, data_valid, label_valid):
                     evals_result=evals_result,
                     verbose_eval=50
                     )
+    
+    # 模型特征重要性画图
+    plt.rcParams['font.sans-serif']=['SimHei']
+    plt.rcParams['axes.unicode_minus']=False
+    lgb.plot_importance(gbm_model)
+    plt.show()
     
     print('Saving model...')
     # 模型保存

@@ -2,6 +2,8 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 from data_pre_process import pre_process
 from model import train_model, eval_model
+from matplotlib import pyplot as plt
+import lightgbm as lgb
 import sys
 
 sys.argv.append(".\data.xls")
@@ -40,6 +42,14 @@ if __name__ == '__main__':
 
         gbm_model, evals_result = train_model(data_train, label_train, data_valid, label_valid)
         score = eval_model(data_valid, label_valid)
-    
-    #  测试集评测
+
+    # 全训练集建模
+    print("全训练集建模")
+    gbm_model, evals_result = train_model(data_model, label_model, data_test, label_test)
+    # 模型特征重要性画图
+    plt.rcParams['font.sans-serif']=['SimHei']
+    plt.rcParams['axes.unicode_minus']=False
+    lgb.plot_importance(gbm_model)
+    plt.show()
+    # 测试集评测
     eval_model(data_test, label_test)
